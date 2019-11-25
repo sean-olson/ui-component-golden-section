@@ -1,0 +1,30 @@
+{
+  "name": "golden-section-ui",
+  "version": "1.0.0",
+  "description": "a configurable, native-js, front-end UI library that renders sized html div elements in relation to one another using the golden-mean ratio.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sean-olson/golden-section-ui.git"
+  },
+  "keywords": [
+    "native",
+    "javascript",
+    "ui",
+    "golden",
+    "mean",
+    "golden",
+    "section",
+    "golden",
+    "ratio"
+  ],
+  "author": "Sean Olson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sean-olson/golden-section-ui/issues"
+  },
+  "homepage": "https://github.com/sean-olson/golden-section-ui#readme"
+}
