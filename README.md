@@ -15,7 +15,7 @@ Import the goldenSection class and constants object into your project using ES m
 
 ### Generate a Grid
 
-Call `goldenSection.generate({targetNodeId: "host-node-id"})`to generate a grid within the HTML element with the id, host-node-id.  You can additional options -- refer to the Options list.
+Call `goldenSection.generate({targetNodeId: "host-node-id"})`to generate a grid within the HTML element with the id, host-node-id.  You can additional options -- refer to the Generate Options list for specific options.
 
 ### Generate Options
 
