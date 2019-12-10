@@ -45,3 +45,16 @@ Call `goldenSection.generate({targetNodeId: "host-node-id"})`to generate a grid 
   
 - **resizeThrotleInterval**: An optional millisecond value that throttles the resize event. By default, it's set to 15ms.
 
+*** Constants
+
+Use these constants for UI configuration.
+ 
+    ORIENTATION: TOP | RIGHT | BOTTOM | LEFT
+
+    ROTATION: CW | CCW
+
+    ALIGN: LEFT | CENTER | RIGHT
+
+    VERTICAL_ALIGN:  TOP | MIDDLE | BOTTOM
+
+
