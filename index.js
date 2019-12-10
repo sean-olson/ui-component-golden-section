@@ -27,7 +27,7 @@ const GS = {
     }
 }
 
-class Ui {
+class GoldenSectionUi {
     constructor(params) {
         this._id = params.targetNodeId;
         this._host = params.host;
@@ -38,10 +38,10 @@ class Ui {
         this._sections = [];
         this._section_count = params.sectionCount;
         this._section_classes = params.sectionClasses;
-        this._render_increment = params.renderIncrement;
+        this._render_interval = params.renderInterval;
         this._major_axis_max = params.majorAxisMax || 0;
         this._major_axis_min = params.majorAxisMin || 0;
-        this._resize_throtle = params.resizeThrotle;
+        this._resize_throtle_interval = params.resizeThrotleInterval;
         this._throttled = false;
         this._host_dimensions = params.hostDimensions;
         this._major_axis = GoldenSection.calculateMajorAxis(this.hostDimensions, 
@@ -57,7 +57,7 @@ class Ui {
     }
     set alignment(val){
         this._alignment =  val;
-    }    
+    }        
     get host() {
         return this._host;
     }
@@ -88,11 +88,11 @@ class Ui {
     set orientation(val) {
         this._orientation = val;
     }     
-    get renderIncrement(){
-        return this._render_increment
+    get renderInterval(){
+        return this._render_interval
     }              
-    get resizeThrotle() {
-        return this._resize_throtle;
+    get resizeThrotleInterval() {
+        return this._resize_throtle_interval;
     }       
     get rotation() {
         return this._rotation;
@@ -152,11 +152,11 @@ class Ui {
             this.throttled = true;
             setTimeout(() => {
                 this.throttled = false;
-            }, this.resizeThrotle);
+            }, this.resizeThrotleInterval);
         }  
     }
 
-    transformUiSections(transform_interval_constant = 0) {
+    transformUiSections(transform_interval_constant = 0, css_transition) {
 
         this.hostDimensions = GoldenSection.getHostDimensions(this.host);        
         this.majorAxis = GoldenSection.calculateMajorAxis(this.hostDimensions, 
@@ -168,6 +168,7 @@ class Ui {
         this.sections[0].coordinates = GoldenSection.calculateStartCoordinates(...base_node_division, this);
         this.sections[0].dimension = base_node_division[0];
         this.sections[0].sectionClass = this.getSectionClass(0);
+        _resetCssTransition(this.sections[0], css_transition);
         this.sections[0].transformSection();
 
         let section_dimension = base_node_division[1];
@@ -188,6 +189,7 @@ class Ui {
             this.sections[i].coordinates = coordinates
             this.sections[i].dimension = section_dimension;
             this.sections[i].sectionClass = this.getSectionClass(i);
+            _resetCssTransition(this.sections[i], css_transition);
 
             if(transform_interval_constant){
                 _transformSectionOnDelay(this.sections[i], transform_interval);
@@ -203,6 +205,12 @@ class Ui {
             setTimeout(()=>{
                 section.transformSection();
             }, interval);               
+        }
+
+        function _resetCssTransition(section, css_transtion) {
+            if (typeof css_transtion !== 'undefined') {
+                section.cssTransition = GoldenSection.normalizeCssTransition(css_transtion); 
+            }
         }
     }
 
@@ -221,14 +229,11 @@ class Ui {
         } 
 
         if (params.hasOwnProperty('sectionClasses')){
-            this.sectionClasses = params.sectionClasses;
-            console.log(params.sectionClasses);
-            
+            this.sectionClasses = params.sectionClasses; 
         }
         
-        const transform_interval_constant =  params.transformInterval ? params.transformInterval : 0;
-        
-        this.transformUiSections(transform_interval_constant);
+        const transform_interval_constant =  params.transformInterval ? params.transformInterval : 0;        
+        this.transformUiSections(transform_interval_constant, params.cssTransition);
     }
 }
 
@@ -239,19 +244,26 @@ class Section{
         this._coordinates = params.coordinates;
         this._dimension = params.dimension;
         this._section_class =  params.sectionClass;
+        this._css_transition = params.cssTransition;
         this._orientation =  params.orientation;
         this._element = document.createElement('div');
 
         this.element.id = this.id
         this.element.className = this.sectionClass
-        this.element.setAttribute('style', `position:absolute; left:${this.coordinates[0]}px; top:${this.coordinates[1]}px; height:${this.dimension}px; width:${this.dimension}px; transition: all .5s ease-out;`);
+        this.element.setAttribute('style', `position:absolute; left:${this.coordinates[0]}px; top:${this.coordinates[1]}px; height:${this.dimension}px; width:${this.dimension}px; transition: all ${this.cssTransition.duration}ms ${this.cssTransition.timing};`);
     }
     get coordinates() {
         return this._coordinates;
     }  
-    set coordinates(coor){
-        this._coordinates = coor;
-    }            
+    set coordinates(obj){
+        this._coordinates = obj;
+    } 
+    get cssTransition(){
+        return this._css_transition;
+    }
+    set cssTransition(obj){
+        this._css_transition =  obj;
+    }                
     get dimension() {
         return this._dimension;
     }
@@ -322,8 +334,9 @@ class Section{
     }
 
     transformSection(){
+        const trans = ``;
         this.setClass(this.sectionClass);
-        this.element.setAttribute('style', `position:absolute; left:${this.coordinates[0]}px; top:${this.coordinates[1]}px; height:${this.dimension}px; width:${this.dimension}px; transition: all .5s ease-out;`);
+        this.element.setAttribute('style', `position:absolute; left:${this.coordinates[0]}px; top:${this.coordinates[1]}px; height:${this.dimension}px; width:${this.dimension}px; transition: all ${this.cssTransition.duration}ms ${this.cssTransition.timing};`);
     }
 
     setClass(cls) {
@@ -469,7 +482,11 @@ class GoldenSection{
             }
         }
         return orientation;
-    }     
+    } 
+    
+    static normalizeCssTransition(css_transition){
+        return typeof css_transition === 'undefined' ? {duration: 500, timing: "ease"} : Object.assign({duration: 500, timing: "ease"}, css_transition);
+    }
     
     constructor(){
         this._ui_nodes = {};       
@@ -486,7 +503,7 @@ class GoldenSection{
         params.hostDimensions = GoldenSection.getHostDimensions(params.host);
         this.initializeHost(params.host);
       
-        const ui_node = new Ui(params);
+        const ui_node = new GoldenSectionUi(params);
         if (!ui_node.host){
             throw new Error('Unable to get refrence to the target element');
         }
@@ -500,7 +517,8 @@ class GoldenSection{
                 dimension: base_node_division[0],
                 id: `${ui_node.id}-node-0`,
                 orientation: ui_node.orientation,
-                sectionClass: ui_node.getSectionClass(0)
+                sectionClass: ui_node.getSectionClass(0),
+                cssTransition: params.cssTransition
             });
  
         ui_node.appendSection(primary_section, 0);
@@ -521,8 +539,9 @@ class GoldenSection{
                 dimension: section_dimension,
                 id: `${ui_node.id}-node-${i}`,
                 orientation: section_orientation,
-                sectionClass: ui_node.getSectionClass(i)
-                }), ui_node.renderIncrement * i);                                                    
+                sectionClass: ui_node.getSectionClass(i),
+                cssTransition: params.cssTransition
+                }), ui_node.renderInterval * i);                                                    
 
             section_dimension = sibling_section.dimension - section_dimension;
             section_orientation = GoldenSection.indexOrientation(section_orientation, ui_node.rotation, 1);
@@ -559,17 +578,19 @@ class GoldenSection{
             is_valid = false; 
             console.log(`Generation Error: a 'targetNodeId' is required by the generate method.`);
         } else {
+
             params.orientation = typeof params.orientation === 'undefined' ? GS.ORIENTATION.RIGHT : params.orientation;
             params.alignment = typeof params.alignment === 'undefined' ? GS.ALIGN.LEFT : params.alignment;
             params.verticalAlignment = typeof params.verticalAlignment === 'undefined' ? GS.VERTICAL_ALIGN.TOP : params.verticalAlignment;
             params.rotation = typeof params.rotation === 'undefined' ? GS.ROTATION.CCW : params.rotation;
-            params.renderIncrement = typeof params.renderIncrement === 'undefined' ? 0: params.renderIncrement;
-            params.resizeThrotle = typeof params.resizeThrotle === 'undefined' ? 15: params.resizeThrotle;
+            params.renderInterval = typeof params.renderInterval === 'undefined' ? 0: params.renderInterval;
+            params.resizeThrotleInterval = typeof params.resizeThrotleInterval === 'undefined' ? 15: params.resizeThrotleInterval;
             if(typeof params.sectionCount === 'undefined' || params.sectionCount < 1){
                 params.sectionCount = 6;
             } else {
                 params.sectionCount = params.sectionCount > 8 ? 8 : params.sectionCount;
             }
+
             if (params.sectionClasses === 'undefined'){
                 params.sectionClasses = ['wax-golden-section']  
             } else if (typeof params.sectionClasses === 'string') {
@@ -578,6 +599,9 @@ class GoldenSection{
                 is_valid = false; 
                 console.log(`Generation Error: an invalid sectionClasses argument was passed: ${JSON.stringify(params.sectionClasses)}`);                
             }
+
+            params.cssTransition = GoldenSection.normalizeCssTransition(params.cssTransition);
+
          }
         return is_valid;
     }
@@ -600,13 +624,17 @@ class GoldenSection{
                 verticalAlignment: Use a GS.VERTICAL_ALIGN constant to determine how the layout is aligned vertically within the containing element.
                 rotation: Use a GS.ROTATION constant to determine the rotational direction of the layout.
                 sectionCount: An integer value to determine the the number of sections to be rendered, the maximum is 8.
-                renderIncrement: An optional millisecond setting that controls the rendering of the layout sections.
                 sectionClasses: An array of one or more class names to be applied to the redered sections.  A class name is applied to a section in
                 sequence to the sections being rendered.  If there are fewer class names in the array than layout sections, the generator will cycle 
                 back through the array of class names, assigning them in sequence.
                 majorAxisMax: An optional integer value that determines the maximum major-axis dimension of the golden-section layout.            
                 majorAxisMin: An optional integer value that determines the minimum major-axis dimension of the golden-section layout. 
-                resizeThrotle: An optional millisecond value that throttles the resize event. By default it's set to 15ms.
+                cssTransition: {
+                    duration: An optional millisecond value that mapps to the transition-duration property -- defualt is 500.
+                    timing: An optional property that maps to the transition-timing-function -- default is ease-out.
+                }
+                renderInterval: An optional millisecond setting that controls the rendering of the layout sections.
+                resizeThrotleInterval: An optional millisecond value that throttles the resize event. By default it's set to 15ms.
 
             ********************************************************
         `);
