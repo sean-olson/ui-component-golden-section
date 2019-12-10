@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Golden Section UI Layout</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/app.css">
+
+        
+        <style>
+            h1{
+                margin: 20px 0;
+            }
+            #golden-section-wrapper{
+                border: dashed 1px goldenrod;
+                height: 75vh;
+                width: 90%;
+                margin: 0 auto;
+            }
+            .golden-box{
+                box-sizing: border-box;
+                border: solid 1px #999;
+                border-radius: 10%;
+                background-color: goldenrod;
+            }
+            .section-square{
+                box-sizing: border-box;
+                border: solid 1px rgb(86, 87, 18);
+                background-color: rgb(190, 230, 152);
+            }  
+            .section-round{
+                box-sizing: border-box;
+                border-radius: 100%;
+                border: solid 1px rgb(109, 20, 160);
+                background-color: rgb(200, 150, 230);                
+            } 
+            .rounded-square{
+                box-sizing: border-box;
+                border-radius: 15%;
+                border: solid 1px rgb(131, 47, 148);
+                background-color: rgb(230, 152, 224);
+            }
+            .super-rounded-square{
+                box-sizing: border-box;
+                border-radius: 25%;
+                border: solid 1px rgb(94, 11, 29);
+                background-color: rgb(145, 30, 30);
+            }
+            .black-box{
+                box-sizing: border-box;
+                border: solid 1px rgb(0,0,0);
+                background-color: rgb(60,60,60);                
+            }
+            .white-box{
+                box-sizing: border-box;
+                border: solid 1px rgb(180,180,180);
+                background-color: rgb(255,255,255);                    
+            }                            
+
+
+        </style>
+    </head>
+    <body>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <h1>Golden Section UI Layout</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div id="golden-section-wrapper"></div>
+                </div>
+            </div>  
+        </div>
+        
+        <script src="js/app.js"></script>
+    </body>
+</html>
