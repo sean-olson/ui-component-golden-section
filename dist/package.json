@@ -1,7 +1,7 @@
 {
   "name": "golden-section-ui",
   "version": "1.0.0",
-  "description": "a configurable, native-js, front-end UI library that renders sized html div elements in relation to one another using the golden-mean ratio.",
+  "description": "A configurable ES6 module that generates a dynamic UI-layout grid based on the golden ratio.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
