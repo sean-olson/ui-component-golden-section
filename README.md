@@ -1,6 +1,6 @@
 # Golden Section UI
 
-A configurable ES6 module that generates a dynamic UI-layout grid based on the golden ratio ([see demo](https://sean-olson.github.io/golden-section-ui/)).
+A configurable ES6 module that generates a dynamic UI-layout grid based on the golden ratio ([see demo](https://sean-olson.github.io/ui-component-golden-section/)).
 
 ## Installation
 
